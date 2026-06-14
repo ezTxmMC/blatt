@@ -6,7 +6,7 @@
 
     <groupId>de.eztxm</groupId>
     <artifactId>blatt</artifactId>
-    <version>1.0.0-alpha.7</version>
+    <version>1.0.0-alpha.8</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
