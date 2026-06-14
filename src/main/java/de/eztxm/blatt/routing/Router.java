@@ -54,6 +54,10 @@ public final class Router {
         return Optional.empty();
     }
 
+    public List<RouteEntry> routes() {
+        return List.copyOf(routes);
+    }
+
     public Optional<Path> staticDir() {
         return staticDir;
     }

@@ -7,8 +7,6 @@ import de.eztxm.blatt.routing.Router;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 
-import java.util.Optional;
-
 public final class BlattServer {
 
     private final Router router;
@@ -24,20 +22,17 @@ public final class BlattServer {
     public void start() {
         Javalin app = Javalin.create(config -> {
             router.staticDir().ifPresent(dir ->
-                config.staticFiles.add(dir.toString(), Location.EXTERNAL)
+                config.staticFiles.add(staticFileConfig -> {
+                    staticFileConfig.hostedPath = "/";
+                    staticFileConfig.directory = dir.toString();
+                    staticFileConfig.location = Location.EXTERNAL;
+                })
             );
-            config.routes.get("/*", ctx -> {
-                String path = ctx.path();
-                Optional<RouteEntry> entry = router.resolveEntry(path);
-
-                if (entry.isEmpty()) {
-                    ctx.status(404).html("<!DOCTYPE html><html><body><h1>404 Not Found</h1></body></html>");
-                    return;
-                }
-
-                HeadConfig headConfig = buildHeadConfig(entry.get());
-                ctx.html(new Document(entry.get().page().root(), headConfig).render());
-            });
+            for (RouteEntry entry : router.routes()) {
+                config.routes.get(entry.path(), ctx ->
+                    ctx.html(new Document(entry.page().root(), buildHeadConfig(entry)).render())
+                );
+            }
         });
 
         app.start(port);

@@ -31,6 +31,10 @@ public final class RouteEntry {
         return path.equals(requested);
     }
 
+    public String path() {
+        return path;
+    }
+
     public Page page() {
         return page;
     }
