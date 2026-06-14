@@ -44,6 +44,8 @@ public final class BlattServer {
             .title(baseConfig.title())
             .lang(baseConfig.lang());
 
+        baseConfig.scriptSrcs().forEach(config::script);
+        baseConfig.stylesheetHrefs().forEach(config::stylesheet);
         router.globalScripts().forEach(config::script);
         router.globalStylesheets().forEach(config::stylesheet);
         entry.scripts().forEach(config::script);
