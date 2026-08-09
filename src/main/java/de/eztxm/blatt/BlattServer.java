@@ -1,4 +1,4 @@
-package de.eztxm.blatt.http;
+package de.eztxm.blatt;
 
 import de.eztxm.blatt.core.Document;
 import de.eztxm.blatt.core.HeadConfig;
@@ -21,17 +21,14 @@ public final class BlattServer {
 
     public void start() {
         Javalin app = Javalin.create(config -> {
-            router.staticDir().ifPresent(dir ->
-                config.staticFiles.add(staticFileConfig -> {
-                    staticFileConfig.hostedPath = "/";
-                    staticFileConfig.directory = dir.toString();
-                    staticFileConfig.location = Location.EXTERNAL;
-                })
-            );
+            router.staticDir().ifPresent(dir -> config.staticFiles.add(staticFileConfig -> {
+                staticFileConfig.hostedPath = "/";
+                staticFileConfig.directory = dir.toString();
+                staticFileConfig.location = Location.EXTERNAL;
+            }));
             for (RouteEntry entry : router.routes()) {
-                config.routes.get(entry.path(), ctx ->
-                    ctx.html(new Document(entry.page().root(), buildHeadConfig(entry)).render())
-                );
+                config.routes.get(entry.path(),
+                        ctx -> ctx.html(new Document(entry.page().root(), buildHeadConfig(entry)).render()));
             }
         });
 
@@ -41,15 +38,19 @@ public final class BlattServer {
 
     private HeadConfig buildHeadConfig(RouteEntry entry) {
         HeadConfig config = new HeadConfig()
-            .title(baseConfig.title())
-            .lang(baseConfig.lang());
+                .title(baseConfig.title())
+                .lang(baseConfig.lang());
 
         baseConfig.scriptSrcs().forEach(config::script);
         baseConfig.stylesheetHrefs().forEach(config::stylesheet);
+        baseConfig.styles().forEach(config::style);
         router.globalScripts().forEach(config::script);
         router.globalStylesheets().forEach(config::stylesheet);
+        router.globalStyles().forEach(config::style);
+        config.style(entry.page().styles());
         entry.scripts().forEach(config::script);
         entry.stylesheets().forEach(config::stylesheet);
+        entry.styles().forEach(config::style);
 
         return config;
     }

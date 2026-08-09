@@ -1,7 +1,8 @@
 package de.eztxm.blatt.examples;
 
 import de.eztxm.blatt.core.HeadConfig;
-import de.eztxm.blatt.http.BlattServer;
+import de.eztxm.blatt.css.Baseline;
+import de.eztxm.blatt.BlattServer;
 import de.eztxm.blatt.routing.Router;
 import de.eztxm.blatt.routing.RouteScanner;
 
@@ -11,7 +12,8 @@ public final class ExampleApp {
 
     public static void main(String[] args) throws Exception {
         Router router = new Router()
-            .staticFiles(Paths.get("public"));
+            .staticFiles(Paths.get("public"))
+            .style(Baseline.reset());
 
         new RouteScanner("de.eztxm.blatt.examples").scan(router);
 

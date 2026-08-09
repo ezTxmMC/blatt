@@ -1,5 +1,7 @@
 package de.eztxm.blatt.routing;
 
+import de.eztxm.blatt.css.StyleSheet;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +12,14 @@ public final class Router {
     private final List<RouteEntry> routes;
     private final List<String> globalScripts;
     private final List<String> globalStylesheets;
+    private final List<StyleSheet> globalStyles;
     private Optional<Path> staticDir;
 
     public Router() {
         routes = new ArrayList<>();
         globalScripts = new ArrayList<>();
         globalStylesheets = new ArrayList<>();
+        globalStyles = new ArrayList<>();
         staticDir = Optional.empty();
     }
 
@@ -31,6 +35,11 @@ public final class Router {
 
     public Router stylesheet(String href) {
         globalStylesheets.add(href);
+        return this;
+    }
+
+    public Router style(StyleSheet style) {
+        globalStyles.add(style);
         return this;
     }
 
@@ -68,5 +77,9 @@ public final class Router {
 
     public List<String> globalStylesheets() {
         return List.copyOf(globalStylesheets);
+    }
+
+    public List<StyleSheet> globalStyles() {
+        return List.copyOf(globalStyles);
     }
 }

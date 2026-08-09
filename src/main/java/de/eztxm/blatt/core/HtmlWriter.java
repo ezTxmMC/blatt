@@ -1,11 +1,19 @@
 package de.eztxm.blatt.core;
 
+import de.eztxm.blatt.css.StyleCollector;
+
 public final class HtmlWriter {
 
     private final StringBuilder builder;
+    private final StyleCollector styles;
 
     public HtmlWriter() {
         builder = new StringBuilder();
+        styles = new StyleCollector();
+    }
+
+    public StyleCollector styles() {
+        return styles;
     }
 
     public void openTag(String tag, Attributes attributes) {

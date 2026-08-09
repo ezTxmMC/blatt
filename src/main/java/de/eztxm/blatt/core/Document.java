@@ -1,5 +1,7 @@
 package de.eztxm.blatt.core;
 
+import de.eztxm.blatt.css.StyleSheet;
+
 public final class Document {
 
     private final Component body;
@@ -15,16 +17,19 @@ public final class Document {
     }
 
     public String render() {
+        HtmlWriter bodyWriter = new HtmlWriter();
+        body.render(bodyWriter);
+
         HtmlWriter writer = new HtmlWriter();
         writer.raw("<!DOCTYPE html>");
         writer.raw("<html lang=\"" + HtmlEscape.attribute(headConfig.lang()) + "\">");
-        writeHead(writer);
-        writeBody(writer);
+        writeHead(writer, bodyWriter.styles().sheet());
+        writeBody(writer, bodyWriter.result());
         writer.raw("</html>");
         return writer.result();
     }
 
-    private void writeHead(HtmlWriter writer) {
+    private void writeHead(HtmlWriter writer, StyleSheet componentStyles) {
         writer.raw("<head>");
         writer.raw("<meta charset=\"UTF-8\">");
         writer.raw("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
@@ -39,6 +44,13 @@ public final class Document {
             writer.raw("<link rel=\"stylesheet\" href=\"" + HtmlEscape.attribute(href) + "\">");
         }
 
+        String css = headConfig.renderStyles() + componentStyles.render();
+        if (!css.isEmpty()) {
+            writer.raw("<style>");
+            writer.raw(css);
+            writer.raw("</style>");
+        }
+
         for (String src : headConfig.scriptSrcs()) {
             writer.raw("<script src=\"" + HtmlEscape.attribute(src) + "\" defer></script>");
         }
@@ -46,9 +58,9 @@ public final class Document {
         writer.raw("</head>");
     }
 
-    private void writeBody(HtmlWriter writer) {
+    private void writeBody(HtmlWriter writer, String renderedBody) {
         writer.raw("<body>");
-        body.render(writer);
+        writer.raw(renderedBody);
         writer.raw("</body>");
     }
 }

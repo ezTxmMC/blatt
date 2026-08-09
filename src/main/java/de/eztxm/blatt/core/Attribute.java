@@ -14,6 +14,20 @@ public final class Attribute {
         return name.equals(other);
     }
 
+    public boolean hasToken(String token) {
+        for (String part : value.split(" ")) {
+            if (part.equals(token)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public String value() {
+        return value;
+    }
+
     public void writeTo(HtmlWriter writer) {
         writer.raw(" " + name + "=\"" + HtmlEscape.attribute(value) + "\"");
     }

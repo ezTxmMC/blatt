@@ -1,11 +1,11 @@
 package de.eztxm.blatt.element;
 
 import de.eztxm.blatt.core.EventHandler;
-import de.eztxm.blatt.core.VoidElement;
+import de.eztxm.blatt.core.VoidTag;
 
 import java.util.Optional;
 
-public final class Input extends VoidElement {
+public final class Input extends VoidTag<Input> {
 
     public Input(String type) {
         super("input");
@@ -24,6 +24,76 @@ public final class Input extends VoidElement {
 
     public Input placeholder(String placeholder) {
         attribute("placeholder", placeholder);
+        return this;
+    }
+
+    public Input min(String min) {
+        attribute("min", min);
+        return this;
+    }
+
+    public Input max(String max) {
+        attribute("max", max);
+        return this;
+    }
+
+    public Input step(String step) {
+        attribute("step", step);
+        return this;
+    }
+
+    public Input pattern(String pattern) {
+        attribute("pattern", pattern);
+        return this;
+    }
+
+    public Input autocomplete(String autocomplete) {
+        attribute("autocomplete", autocomplete);
+        return this;
+    }
+
+    public Input accept(String accept) {
+        attribute("accept", accept);
+        return this;
+    }
+
+    public Input form(String form) {
+        attribute("form", form);
+        return this;
+    }
+
+    public Input list(String list) {
+        attribute("list", list);
+        return this;
+    }
+
+    public Input maxLength(int maxLength) {
+        attribute("maxlength", String.valueOf(maxLength));
+        return this;
+    }
+
+    public Input required() {
+        attribute("required", "");
+        return this;
+    }
+
+    public Input disabled() {
+        attribute("disabled", "");
+        return this;
+    }
+
+    public Input readOnly() {
+        attribute("readonly", "");
+        return this;
+    }
+
+    public Input checked() {
+        attribute("checked", "");
+        return this;
+    }
+
+    public Input multiple() {
+        attribute("multiple", "");
         return this;
     }
 
