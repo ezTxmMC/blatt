@@ -1,6 +1,6 @@
 # Blatt
 
-**HTML und CSS in purem Java – ohne Template-Engine, ohne `.html`, ohne `.css`.**
+**HTML and CSS in pure Java – no template engine, no `.html`, no `.css`.**
 
 [![Java](https://img.shields.io/badge/Java-17+-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Javalin](https://img.shields.io/badge/Javalin-7.2-1D8FE1)](https://javalin.io/)
@@ -14,34 +14,34 @@ public final class HomeRoute implements Page {
     @Override
     public Component root() {
         return new Main(
-            new Heading(1, new Text("Hallo Blatt")),
-            new Button(new Text("Klick mich"))
+            new Heading(1, new Text("Hello Blatt")),
+            new Button(new Text("Click me"))
                 .style(new Style().padding(Css.rem(0.75), Css.rem(1.5)))
                 .on(":hover", new Style().backgroundColor(Css.hex("4338ca")))
-                .onClick("alert('Moin')")
+                .onClick("alert('Hello')")
         );
     }
 }
 ```
 
-Kein String-Konkatenieren, kein Template-Parser: Seiten sind typisierte Java-Objekte, die sich selbst rendern. Der Compiler kennt deine Tags, deine Attribute und deine Styles.
+No string concatenation, no template parser: pages are typed Java objects that render themselves. The compiler knows your tags, your attributes, and your styles.
 
 ---
 
-## Inhalt
+## Table of Contents
 
 - [Highlights](#highlights)
 - [Installation](#installation)
-- [Schnellstart](#schnellstart)
-- [Elemente](#elemente)
+- [Quickstart](#quickstart)
+- [Elements](#elements)
 - [CSS in Java](#css-in-java)
-- [Styling pro Element](#styling-pro-element)
-- [Komponenten mit Scoped Styles](#komponenten-mit-scoped-styles)
-- [Routing und Server](#routing-und-server)
-- [Wie das Rendern abläuft](#wie-das-rendern-abläuft)
-- [Projektstruktur](#projektstruktur)
-- [Bauen und Testen](#bauen-und-testen)
-- [Grenzen](#grenzen)
+- [Per-Element Styling](#per-element-styling)
+- [Components with Scoped Styles](#components-with-scoped-styles)
+- [Routing and Server](#routing-and-server)
+- [How Rendering Works](#how-rendering-works)
+- [Project Structure](#project-structure)
+- [Building and Testing](#building-and-testing)
+- [Limitations](#limitations)
 
 ---
 
@@ -49,19 +49,19 @@ Kein String-Konkatenieren, kein Template-Parser: Seiten sind typisierte Java-Obj
 
 | | |
 |---|---|
-| **94 Elemente** | Von `Div` bis `Dialog`, mit typisierten Attributen: `colSpan(int)`, `open()`, `forId(…)` |
-| **CSS-DSL** | Stylesheets, Media Queries, Keyframes, Custom Properties – alles in Java |
-| **Styling pro Element** | `.style(…)` inline, `.on(":hover", …)` als echte Regel – dedupliziert über den Inhalt |
-| **Scoped Components** | `@Component` kapselt CSS pro Komponente, ganz ohne Namenskonventionen |
-| **Automatisches CSS** | Komponenten-Styles landen von selbst im `<head>` – keine Registrierung nötig |
-| **Escaping überall** | Text, Attribute und CSS-Werte werden maskiert, bevor sie das Dokument verlassen |
-| **Keine Laufzeit-Magie** | Kein Reflection-Rendering, kein Bytecode-Weben – nur Objekte und ein `StringBuilder` |
+| **94 Elements** | From `Div` to `Dialog`, with typed attributes: `colSpan(int)`, `open()`, `forId(…)` |
+| **CSS DSL** | Stylesheets, media queries, keyframes, custom properties – all in Java |
+| **Per-Element Styling** | `.style(…)` inline, `.on(":hover", …)` as a real rule – content-deduplicated |
+| **Scoped Components** | `@Component` encapsulates CSS per component, without naming conventions |
+| **Automatic CSS** | Component styles land in `<head>` automatically – no registration required |
+| **Escaping Everywhere** | Text, attributes, and CSS values are escaped before leaving the document |
+| **No Runtime Magic** | No reflection rendering, no bytecode weaving – just objects and a `StringBuilder` |
 
 ---
 
 ## Installation
 
-Blatt liegt in den GitHub Packages. In die `pom.xml`:
+Blatt is hosted on GitHub Packages. Add this to your `pom.xml`:
 
 ```xml
 <repositories>
@@ -80,25 +80,25 @@ Blatt liegt in den GitHub Packages. In die `pom.xml`:
 </dependencies>
 ```
 
-GitHub Packages verlangt eine Anmeldung. In `~/.m2/settings.xml`:
+GitHub Packages requires authentication. Add this to `~/.m2/settings.xml`:
 
 ```xml
 <servers>
     <server>
         <id>github</id>
-        <username>DEIN_GITHUB_NAME</username>
-        <password>DEIN_PERSONAL_ACCESS_TOKEN</password>
+        <username>YOUR_GITHUB_USERNAME</username>
+        <password>YOUR_PERSONAL_ACCESS_TOKEN</password>
     </server>
 </servers>
 ```
 
-Das Token braucht nur `read:packages`. Vorausgesetzt wird **Java 17** oder neuer.
+The token only requires `read:packages` scope. **Java 17** or newer is required.
 
 ---
 
-## Schnellstart
+## Quickstart
 
-**1. Eine Route.** Eine Klasse mit `@Route` und `Page` ist eine Seite:
+**1. A Route.** A class annotated with `@Route` implementing `Page` represents a page:
 
 ```java
 @Route("/")
@@ -127,7 +127,7 @@ public final class CounterRoute implements Page {
 }
 ```
 
-**2. Der Server.** `RouteScanner` findet alle `@Route`-Klassen im Package:
+**2. The Server.** `RouteScanner` finds all `@Route` classes in the specified package:
 
 ```java
 public final class App {
@@ -139,14 +139,14 @@ public final class App {
 
         new RouteScanner("de.example.app").scan(router);
 
-        HeadConfig head = new HeadConfig().title("Meine App");
+        HeadConfig head = new HeadConfig().title("My App");
 
         new BlattServer(router, head, 7171).start();
     }
 }
 ```
 
-Fertig – `http://localhost:7171`. Wer keinen Server will, rendert direkt:
+Done – `http://localhost:7171`. If you don't need a server, render directly:
 
 ```java
 String html = new Document(page.root(), head).render();
@@ -154,53 +154,53 @@ String html = new Document(page.root(), head).render();
 
 ---
 
-## Elemente
+## Elements
 
-Jedes Element ist eine eigene Klasse in `de.eztxm.blatt.element`. Kinder kommen in den Konstruktor, Attribute per Fluent-Setter:
+Every element is its own class in `de.eztxm.blatt.element`. Children are passed into the constructor, attributes via fluent setters:
 
 ```java
-new Anchor(new Text("Zur Doku"))
+new Anchor(new Text("To Docs"))
     .href("/docs")
     .target("_blank")
     .rel("noopener")
 ```
 
 <details>
-<summary><b>Alle 94 Elemente</b></summary>
+<summary><b>All 94 Elements</b></summary>
 
-**Struktur** · Html, Head, Body, Main, Header, Footer, Nav, Section, Article, Aside, Div, Span, HeadingGroup, Address, Menu, Template, Slot, NoScript
+**Structure** · Html, Head, Body, Main, Header, Footer, Nav, Section, Article, Aside, Div, Span, HeadingGroup, Address, Menu, Template, Slot, NoScript
 
 **Text** · Heading, Paragraph, Anchor, Strong, Emphasis, Small, Mark, Code, Preformatted, Quote, BlockQuote, Cite, Abbreviation, Time, Deleted, Inserted, Subscript, Superscript, Keyboard, Sample, Variable, Bold, Italic, Underline, Strikethrough
 
-**Listen** · UnorderedList, OrderedList, ListItem, DescriptionList, DescriptionTerm, DescriptionDetails
+**Lists** · UnorderedList, OrderedList, ListItem, DescriptionList, DescriptionTerm, DescriptionDetails
 
-**Tabellen** · Table, TableHead, TableBody, TableFoot, TableRow, Cell, HeaderCell, Caption, Column, ColumnGroup
+**Tables** · Table, TableHead, TableBody, TableFoot, TableRow, Cell, HeaderCell, Caption, Column, ColumnGroup
 
-**Formulare** · Form, Label, Input, TextArea, Select, Option, OptionGroup, Button, FieldSet, Legend, DataList, Output, Progress, Meter, Details, Summary, Dialog
+**Forms** · Form, Label, Input, TextArea, Select, Option, OptionGroup, Button, FieldSet, Legend, DataList, Output, Progress, Meter, Details, Summary, Dialog
 
-**Medien** · Image, Picture, Source, Video, Audio, Track, Canvas, IFrame, Embed, Figure, FigureCaption
+**Media** · Image, Picture, Source, Video, Audio, Track, Canvas, IFrame, Embed, Figure, FigureCaption
 
-**Dokument** · Title, Link, Meta, Script
+**Document** · Title, Link, Meta, Script
 
-**Umbrüche** · LineBreak, HorizontalRule, WordBreak
+**Breaks** · LineBreak, HorizontalRule, WordBreak
 
 </details>
 
-Elemente ohne Inhalt – `Image`, `Input`, `Link`, `Meta`, `Source`, `Track`, `Column`, `Embed`, `LineBreak`, `HorizontalRule`, `WordBreak` – rendern ohne schließenden Tag.
+Void elements – `Image`, `Input`, `Link`, `Meta`, `Source`, `Track`, `Column`, `Embed`, `LineBreak`, `HorizontalRule`, `WordBreak` – render without a closing tag.
 
-Auf **jedem** Element verfügbar: `id`, `cssClass`, `style`, `on`, `attr`, `title`, `role`, `data`, `aria`, `tabIndex`, `hidden`, `onClick`. Dank Self-Type behält die Kette immer den konkreten Typ – die Reihenfolge ist egal:
+Available on **every** element: `id`, `cssClass`, `style`, `on`, `attr`, `title`, `role`, `data`, `aria`, `tabIndex`, `hidden`, `onClick`. Thanks to self-types, method chains retain the concrete type regardless of order:
 
 ```java
-new Button(new Text("Senden")).cssClass("primary").type("submit").disabled()
+new Button(new Text("Submit")).cssClass("primary").type("submit").disabled()
 ```
 
-Für alles ohne eigene Methode gibt es `attr(name, value)`.
+For anything without a dedicated method, use `attr(name, value)`.
 
 ---
 
 ## CSS in Java
 
-`Style` sammelt Deklarationen, `StyleSheet` sammelt Regeln:
+`Style` collects declarations, `StyleSheet` collects rules:
 
 ```java
 new StyleSheet()
@@ -220,40 +220,40 @@ new StyleSheet()
             .width(Css.percent(100))));
 ```
 
-**Verschachtelung** funktioniert wie in SCSS: `&` steht für den Eltern-Selektor, alles andere wird zum Nachfahren.
+**Nesting** works like SCSS: `&` represents the parent selector; anything else becomes a descendant.
 
-**Werte** liefert `Css`: `px`, `rem`, `em`, `percent`, `vh`, `vw`, `fr`, `seconds`, `millis`, `deg`, `hex`, `rgb`, `rgba`, `hsl`, `var`, `calc`, `clamp`, `min`, `max`, `repeat`, `url`, `quoted`.
+**Values** are provided by `Css`: `px`, `rem`, `em`, `percent`, `vh`, `vw`, `fr`, `seconds`, `millis`, `deg`, `hex`, `rgb`, `rgba`, `hsl`, `var`, `calc`, `clamp`, `min`, `max`, `repeat`, `url`, `quoted`.
 
-**Animationen** über `Keyframes`, **Presets** über `Baseline.reset()` (moderner CSS-Reset inklusive `prefers-reduced-motion`).
+**Animations** via `Keyframes`, **presets** via `Baseline.reset()` (includes a modern CSS reset and `prefers-reduced-motion`).
 
-Ein Stylesheet kann global (`Router.style`), pro Route (`RouteEntry.style`), pro Seite (`Page.styles()`) oder pro Dokument (`HeadConfig.style`) gelten. Wer doch eine Datei will, nutzt weiterhin `stylesheet("/app.css")`.
+Stylesheets can be applied globally (`Router.style`), per route (`RouteEntry.style`), per page (`Page.styles()`), or per document (`HeadConfig.style`). If you still prefer external files, use `stylesheet("/app.css")`.
 
 ---
 
-## Styling pro Element
+## Per-Element Styling
 
-Inline-Styles können kein `:hover`. Deshalb gibt es `on(...)`:
+Inline styles cannot target `:hover`. That's why `on(...)` exists:
 
 ```java
-new Anchor(new Text("Mehr"))
-    .style(new Style().color("inherit"))                      // → style="color:inherit;"
+new Anchor(new Text("More"))
+    .style(new Style().color("inherit"))                    // → style="color:inherit;"
     .on(":hover", new Style().textDecoration("underline"))    // → .b-1:hover { … }
     .on("::after", new Style().content(Css.quoted(" *")))
 ```
 
-Beim Rendern bekommt das Element eine generierte Klasse und die Regel wandert ins Stylesheet des Dokuments. Der String in `on(...)` wird an den Selektor gehängt – also auch `":nth-child(2)"`, `":focus-visible"`, `" p"` (Nachfahre) oder `""` für die Basisregel.
+During rendering, the element is assigned a generated class name and the rule moves to the document stylesheet. The string in `on(...)` is appended directly to the selector – enabling `":nth-child(2)"`, `":focus-visible"`, `" p"` (descendant), or `""` for base rules.
 
-**Gleiche Styles teilen sich eine Klasse.** Zehn identisch gestylte Buttons erzeugen genau eine Regel, weil der Schlüssel aus dem gerenderten CSS gebildet wird. Eine selbst gesetzte `cssClass` bleibt erhalten:
+**Identical styles share classes.** Ten buttons with identical inline pseudo-styles generate exactly one CSS rule because the lookup key is built from the rendered CSS string. Custom `cssClass` definitions are preserved:
 
 ```html
-<a href="#" style="color:inherit;" class="b-1">Mehr</a>
+<a href="#" style="color:inherit;" class="b-1">More</a>
 ```
 
 ---
 
-## Komponenten mit Scoped Styles
+## Components with Scoped Styles
 
-`@Component` + `Widget` bündelt Markup und CSS zu einer wiederverwendbaren Einheit:
+`@Component` + `Widget` bundles markup and CSS into a reusable unit:
 
 ```java
 @Component("card")
@@ -280,9 +280,9 @@ public final class CardWidget extends Widget {
 }
 ```
 
-Benutzt wird sie wie jedes andere Element – `new CardWidget("Titel")`. Das CSS landet automatisch im `<head>`, **einmal**, egal wie oft die Komponente vorkommt.
+Usage is identical to standard elements – `new CardWidget("Title")`. CSS is pushed to the `<head>` automatically, rendered **once** regardless of instance count.
 
-Jedes Element im Teilbaum bekommt ein Scope-Attribut, jeder Selektor den passenden Suffix:
+Every element in the component tree receives a scope attribute, and every selector receives a matching suffix:
 
 ```css
 [data-card-1b64drv]        { padding: 1.25rem }
@@ -290,32 +290,32 @@ Jedes Element im Teilbaum bekommt ein Scope-Attribut, jeder Selektor den passend
 .title[data-card-1b64drv]  { color: var(--accent) }
 ```
 
-| Regel | Bedeutung |
+| Rule | Meaning |
 |---|---|
-| `&` | die Komponente selbst |
-| `.title` | nur `.title` **innerhalb** dieser Komponente |
-| verschachtelte Komponente | eigener Scope – das `.title` einer Kindkomponente bleibt unberührt |
-| Wurzel der Kindkomponente | erbt zusätzlich den Scope des Elternteils, damit Layout von außen möglich bleibt |
+| `&` | The component root itself |
+| `.title` | Only `.title` **inside** this component |
+| Nested component | Separate scope – `.title` inside a child component remains unaffected |
+| Child component root | Inherits parent scope attribute so outer layout can target it |
 
-Der Scope-Name kommt aus dem Annotationswert (sonst aus dem Klassennamen) plus einem stabilen Hash des vollqualifizierten Namens. `@Component(scoped = false)` schaltet die Kapselung ab – praktisch für Theme- oder Reset-Komponenten.
+Scope names originate from the annotation value (or fall back to class name) plus a stable hash of the fully qualified class name. `@Component(scoped = false)` disables scoping – useful for theme or reset components.
 
 ---
 
-## Routing und Server
+## Routing and Server
 
 ```java
 Router router = new Router()
-    .staticFiles(Paths.get("public"))   // statische Dateien
-    .style(Baseline.reset())            // globales CSS
-    .script("/app.js");                 // globales JS
+    .staticFiles(Paths.get("public"))   // static files
+    .style(Baseline.reset())            // global CSS
+    .script("/app.js");                 // global JS
 
-new RouteScanner("de.example.app").scan(router);   // @Route einsammeln
+new RouteScanner("de.example.app").scan(router);   // scan @Route annotations
 
-router.register("/health", () -> new Div(new Text("ok")))   // oder manuell
-    .stylesheet("/extra.css");                              // nur für diese Route
+router.register("/health", () -> new Div(new Text("ok")))   // manual registration
+    .stylesheet("/extra.css");                             // route-specific stylesheet
 ```
 
-Der `HeadConfig` steuert den `<head>`: `title`, `lang`, `script`, `stylesheet`, `style`. Zusammengeführt wird in dieser Reihenfolge – Basis → global → Seite → Route:
+`HeadConfig` configures document `<head>` defaults: `title`, `lang`, `script`, `stylesheet`, `style`. Merging happens in order: Base → Global → Page → Route:
 
 ```java
 new BlattServer(router, new HeadConfig().title("App").lang("de"), 7171).start();
@@ -323,44 +323,44 @@ new BlattServer(router, new HeadConfig().title("App").lang("de"), 7171).start();
 
 ---
 
-## Wie das Rendern abläuft
+## How Rendering Works
 
 ```mermaid
 flowchart LR
-    A[Page.root] --> B[Body rendern]
-    B --> C[StyleCollector<br/>sammelt Komponenten- und<br/>Element-Styles]
-    C --> D[head schreiben<br/>inkl. style-Block]
-    D --> E[HTML-String]
+    A[Page.root] --> B[Render Body]
+    B --> C[StyleCollector<br/>collects component and<br/>element styles]
+    C --> D[Write head<br/>including style block]
+    D --> E[HTML String]
 ```
 
-Der Body wird **zuerst** gerendert – nur so weiß der `<head>`, welche Komponenten überhaupt vorkommen. Deshalb enthält das Dokument exakt das CSS, das die Seite braucht, und keine Zeile mehr.
+The body is rendered **first** – allowing the `<head>` to know exactly which components were instantiated. As a result, the document contains only the required CSS and nothing extra.
 
 ---
 
-## Projektstruktur
+## Project Structure
 
 ```
 de.eztxm.blatt
-├── BlattServer            Javalin-Anbindung
-├── core                   Component, Element, Tag<S>, VoidTag<S>, Markup,
-│                          Text, Document, HeadConfig, HtmlWriter, Escaping
-├── css                    Style, Rule, StyleSheet, MediaRule, Keyframes,
-│                          Css, Baseline, ScopedSelector, StyleCollector
-├── element                die 94 HTML-Elemente
-├── component              @Component, Widget, Scope
-└── routing                @Route, Page, Router, RouteEntry, RouteScanner
+├── BlattServer         Javalin integration
+├── core                Component, Element, Tag<S>, VoidTag<S>, Markup,
+│                       Text, Document, HeadConfig, HtmlWriter, Escaping
+├── css                 Style, Rule, StyleSheet, MediaRule, Keyframes,
+│                       Css, Baseline, ScopedSelector, StyleCollector
+├── element             The 94 HTML elements
+├── component           @Component, Widget, Scope
+└── routing             @Route, Page, Router, RouteEntry, RouteScanner
 ```
 
 ---
 
-## Bauen und Testen
+## Building and Testing
 
 ```bash
-mvn test        # 80 Tests
-mvn package     # JAR nach target/
+mvn test        # 80 tests
+mvn package     # JAR into target/
 ```
 
-Das Beispiel unter [`examples/`](examples/) ist nicht Teil des Maven-Builds. Gegen das gebaute JAR kompilieren:
+The example project in [`examples/`](examples/) is excluded from the main Maven build. To compile against the built JAR:
 
 ```bash
 mvn dependency:build-classpath -Dmdep.outputFile=cp.txt
@@ -368,13 +368,13 @@ javac -cp "$(cat cp.txt):target/classes" -d out $(find examples -name '*.java')
 java -cp "$(cat cp.txt):target/classes:out" de.eztxm.blatt.examples.ExampleApp
 ```
 
-> Unter Windows trennt der Classpath mit `;` statt `:`.
+> On Windows, separate classpath entries with `;` instead of `:`.
 
 ---
 
-## Grenzen
+## Limitations
 
-- **Alpha.** Die API kann sich zwischen Versionen noch ändern.
-- **Serverseitig.** Blatt rendert HTML; Interaktivität kommt über `onClick` und eigenes JavaScript, nicht über einen Client-Renderer.
-- **`raw(...)` ist ungeprüft.** `HtmlWriter.raw` und `StyleSheet.raw` schreiben unverändert durch – dort gehört keine Nutzereingabe hinein. Alles andere wird maskiert.
-- **Ein Selektor greift nach oben.** Bei `.a .b` wird nur `.b` auf den Scope eingeschränkt; ein Vorfahre `.a` darf außerhalb der Komponente liegen.
+- **Alpha status.** The API may change between versions.
+- **Server-side only.** Blatt renders HTML; client interaction relies on `onClick` or custom JavaScript rather than client-side rendering.
+- **`raw(...)` is unescaped.** `HtmlWriter.raw` and `StyleSheet.raw` output unescaped strings – do not pass untrusted user input to them. All other input is safely escaped.
+- **Selector scoping targets descendants.** In `.a .b`, only `.b` is scoped; ancestor selector `.a` may exist outside the component scope.
