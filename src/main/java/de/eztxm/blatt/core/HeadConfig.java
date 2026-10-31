@@ -1,5 +1,6 @@
 package de.eztxm.blatt.core;
 
+import de.eztxm.blatt.css.CssWriter;
 import de.eztxm.blatt.css.StyleSheet;
 
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ public final class HeadConfig {
     private final List<String> scriptSrcs;
     private final List<String> stylesheetHrefs;
     private final List<StyleSheet> styles;
+    private final List<String> tailwindCss;
+    private boolean tailwind;
 
     public HeadConfig() {
         title = "";
@@ -19,6 +22,7 @@ public final class HeadConfig {
         scriptSrcs = new ArrayList<>();
         stylesheetHrefs = new ArrayList<>();
         styles = new ArrayList<>();
+        tailwindCss = new ArrayList<>();
     }
 
     public HeadConfig title(String title) {
@@ -46,6 +50,19 @@ public final class HeadConfig {
         return this;
     }
 
+    /** Enables experimental Tailwind CSS (v4 browser build) for this document. */
+    public HeadConfig tailwind() {
+        tailwind = true;
+        return this;
+    }
+
+    /** Enables experimental Tailwind CSS and adds custom CSS such as {@code @theme} blocks. */
+    public HeadConfig tailwind(String css) {
+        tailwind = true;
+        tailwindCss.add(css);
+        return this;
+    }
+
     public String title() {
         return title;
     }
@@ -66,12 +83,20 @@ public final class HeadConfig {
         return List.copyOf(styles);
     }
 
+    public boolean usesTailwind() {
+        return tailwind;
+    }
+
+    public List<String> tailwindCss() {
+        return List.copyOf(tailwindCss);
+    }
+
     public String renderStyles() {
-        StyleSheet combined = new StyleSheet();
+        CssWriter writer = new CssWriter();
         for (StyleSheet style : styles) {
-            combined.with(style);
+            style.writeTo(writer);
         }
 
-        return combined.render();
+        return writer.result();
     }
 }

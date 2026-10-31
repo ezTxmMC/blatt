@@ -27,19 +27,26 @@ public final class RouteScanner {
 
     private void register(ClassInfo classInfo, Router router) {
         Class<?> clazz = classInfo.loadClass();
+        boolean page = Page.class.isAssignableFrom(clazz);
+        boolean endpoint = Endpoint.class.isAssignableFrom(clazz);
 
-        if (!Page.class.isAssignableFrom(clazz)) {
+        if (!page && !endpoint) {
             throw new IllegalStateException(
-                clazz.getName() + " is annotated with @Route but does not implement Page"
+                clazz.getName() + " is annotated with @Route but implements neither Page nor Endpoint"
             );
         }
 
         Route annotation = clazz.getAnnotation(Route.class);
         String path = annotation.value();
+        HttpMethod method = annotation.method();
 
         try {
-            Page page = (Page) clazz.getDeclaredConstructor().newInstance();
-            router.register(path, page);
+            Object instance = clazz.getDeclaredConstructor().newInstance();
+            if (page) {
+                router.register(method, path, (Page) instance);
+            } else {
+                router.register(method, path, (Endpoint) instance);
+            }
         } catch (Exception e) {
             throw new IllegalStateException(
                 "Failed to instantiate " + clazz.getName() + " — requires a no-arg constructor", e

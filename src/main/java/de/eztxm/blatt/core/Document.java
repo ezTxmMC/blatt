@@ -1,6 +1,7 @@
 package de.eztxm.blatt.core;
 
 import de.eztxm.blatt.css.StyleSheet;
+import de.eztxm.blatt.css.Tailwind;
 
 public final class Document {
 
@@ -49,6 +50,16 @@ public final class Document {
             writer.raw("<style>");
             writer.raw(css);
             writer.raw("</style>");
+        }
+
+        if (headConfig.usesTailwind()) {
+            writer.raw("<style type=\"text/tailwindcss\">");
+            writer.raw(Tailwind.IMPORT);
+            for (String theme : headConfig.tailwindCss()) {
+                writer.raw(theme);
+            }
+            writer.raw("</style>");
+            writer.raw("<script src=\"" + Tailwind.BROWSER_SCRIPT + "\" defer></script>");
         }
 
         for (String src : headConfig.scriptSrcs()) {

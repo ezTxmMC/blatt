@@ -321,6 +321,49 @@ router.register("/health", () -> new Div(new Text("ok")))   // manual registrati
 new BlattServer(router, new HeadConfig().title("App").lang("de"), 7171).start();
 ```
 
+### HTTP Methods
+
+Every route has an HTTP method. `@Route` uses `GET` unless you set `method`, and `Router` has one method per verb. The same path can be registered once per method:
+
+```java
+@Route(value = "/items", method = HttpMethod.POST)
+public final class CreateItem implements Endpoint {
+
+    @Override
+    public void handle(Context ctx) {
+        ctx.status(201).result("created " + ctx.formParam("name"));
+    }
+}
+```
+
+```java
+router.get("/items/{id}", page);           // Page: renders an HTML document
+router.post("/items", endpoint);           // Endpoint: raw Javalin Context
+router.put("/items/{id}", endpoint);
+router.patch("/items/{id}", endpoint);
+router.delete("/items/{id}", endpoint);
+```
+
+- **`Page`** renders an HTML document and gets the head merging described above. It works for any method, for example to render the result of a form post.
+- **`Endpoint`** writes the response itself (redirects, JSON, status codes). Its `script`, `stylesheet` and `style` settings are ignored.
+- Path parameters: a segment written as `{name}` matches exactly one non-empty path segment (`/items/{id}` matches `/items/42`, not `/items/` or `/items/42/x`). Literal paths take precedence over parameterized ones.
+- If a path is registered twice for the same method, the first registration wins.
+
+### Experimental: Tailwind CSS
+
+Blatt can load Tailwind CSS v4 (currently `4.3.3`) through Tailwind's official browser build. It compiles classes in the browser at runtime, so treat it as a development aid rather than a production setup. Enable it globally, per document, or per route:
+
+```java
+Router router = new Router()
+    .tailwind("""
+        @theme { --color-brand: #4338ca; }
+        """);                                         // every page, with a custom theme
+
+router.register("/about", page).tailwind();           // one page only
+```
+
+Enabling Tailwind adds `<style type="text/tailwindcss">@import "tailwindcss";…</style>` and the browser script to the `<head>`. The pinned version is `Tailwind.VERSION`.
+
 ---
 
 ## How Rendering Works
@@ -345,10 +388,10 @@ de.eztxm.blatt
 ├── core                Component, Element, Tag<S>, VoidTag<S>, Markup,
 │                       Text, Document, HeadConfig, HtmlWriter, Escaping
 ├── css                 Style, Rule, StyleSheet, MediaRule, Keyframes,
-│                       Css, Baseline, ScopedSelector, StyleCollector
+│                       Css, Baseline, Tailwind, ScopedSelector, StyleCollector
 ├── element             The 94 HTML elements
 ├── component           @Component, Widget, Scope
-└── routing             @Route, Page, Router, RouteEntry, RouteScanner
+└── routing             @Route, HttpMethod, Page, Endpoint, Router, RouteEntry, RouteScanner
 ```
 
 ---
@@ -356,7 +399,7 @@ de.eztxm.blatt
 ## Building and Testing
 
 ```bash
-mvn test        # 80 tests
+mvn test        # 99 tests
 mvn package     # JAR into target/
 ```
 

@@ -10,4 +10,6 @@ import java.lang.annotation.Target;
 public @interface Route {
 
     String value();
+
+    HttpMethod method() default HttpMethod.GET;
 }
