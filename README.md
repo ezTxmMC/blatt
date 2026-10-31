@@ -5,7 +5,7 @@
 [![Java](https://img.shields.io/badge/Java-17+-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Javalin](https://img.shields.io/badge/Javalin-7.2-1D8FE1)](https://javalin.io/)
 [![Build](https://img.shields.io/badge/build-Maven-C71A36?logo=apachemaven&logoColor=white)](https://maven.apache.org/)
-[![Version](https://img.shields.io/badge/version-1.0.0--alpha.9-orange)](https://github.com/ezTxmMC/blatt/releases)
+[![Version](https://img.shields.io/badge/version-1.0.0--alpha.10-orange)](https://github.com/ezTxmMC/blatt/releases)
 
 ```java
 @Route("/")
@@ -75,7 +75,7 @@ Blatt is hosted on GitHub Packages. Add this to your `pom.xml`:
     <dependency>
         <groupId>de.eztxm</groupId>
         <artifactId>blatt</artifactId>
-        <version>1.0.0-alpha.9</version>
+        <version>1.0.0-alpha.10</version>
     </dependency>
 </dependencies>
 ```
