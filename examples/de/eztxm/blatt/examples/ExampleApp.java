@@ -1,6 +1,7 @@
 package de.eztxm.blatt.examples;
 
 import de.eztxm.blatt.core.HeadConfig;
+import de.eztxm.blatt.examples.api.ItemRoutes;
 import de.eztxm.blatt.css.Baseline;
 import de.eztxm.blatt.BlattServer;
 import de.eztxm.blatt.routing.Router;
@@ -16,6 +17,7 @@ public final class ExampleApp {
             .style(Baseline.reset());
 
         new RouteScanner("de.eztxm.blatt.examples").scan(router);
+        ItemRoutes.register(router);
 
         HeadConfig head = new HeadConfig()
             .title("Blatt Example");

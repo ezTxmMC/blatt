@@ -413,6 +413,15 @@ java -cp "$(cat cp.txt):target/classes:out" de.eztxm.blatt.examples.ExampleApp
 
 > On Windows, separate classpath entries with `;` instead of `:`.
 
+### Examples
+
+| Example | What it shows | Run |
+|---|---|---|
+| `ExampleApp` | Counter page, scoped components, the item API and the contact form | `de.eztxm.blatt.examples.ExampleApp` (port 7171, needs a `public/` directory in the working directory) |
+| `examples/api` | JSON item API: `GET`, `POST`, `PUT`, `PATCH`, `DELETE` on `/api/items`, with `{id}` paths | `curl -X PATCH -d "done=true" localhost:7171/api/items/1` |
+| `examples/forms` | Form `GET`, `POST` with validation, and a redirect (Post/Redirect/Get) | open `localhost:7171/contact` |
+| `tailwind/TailwindExampleApp` | Experimental Tailwind v4 with a custom `@theme` color | `de.eztxm.blatt.tailwind.TailwindExampleApp` (port 7172) |
+
 ---
 
 ## Limitations
